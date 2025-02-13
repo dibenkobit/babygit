@@ -10,6 +10,9 @@ export async function bumpVersion(bumpType: 'major' | 'minor' | 'patch'): Promis
     if (!existsSync(pkgPath)) {
         console.log('package.json not found, skipping version bump.');
         return null;
+
+        // FIXME:
+        console.log(916);
     }
     try {
         const data = await fs.readFile(pkgPath, 'utf-8');
