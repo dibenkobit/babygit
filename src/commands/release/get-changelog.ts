@@ -6,8 +6,8 @@ import { execSync } from 'child_process';
 export function getChangelog(version: string): string {
     try {
         const releaseBranch = `release/${version}`;
-        // Get full commit messages including body between develop and release branch
-        const commits = execSync(`git log develop..${releaseBranch} --pretty=format:"%s%n%n%b" --no-merges`, {
+        // Get full commit messages including body between main and release branch
+        const commits = execSync(`git log main..${releaseBranch} --pretty=format:"%s%n%n%b" --no-merges`, {
             encoding: 'utf-8'
         }).trim();
 
