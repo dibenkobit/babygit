@@ -6,20 +6,35 @@ import { execSync } from 'child_process';
 export function getChangelog(version: string): string {
     try {
         const releaseBranch = `release/${version}`;
-        // Получаем список коммитов между main и release веткой
-        const commits = execSync(`git log main..${releaseBranch} --pretty=format:"%s"`, { encoding: 'utf-8' }).trim();
+        // Get full commit messages including body between develop and release branch
+        const commits = execSync(`git log develop..${releaseBranch} --pretty=format:"%s%n%n%b" --no-merges`, {
+            encoding: 'utf-8'
+        }).trim();
 
         if (!commits) {
             return 'No changes found';
         }
 
-        // Преобразуем вывод в массив и форматируем
-        const changes = commits
-            .split('\n')
-            .map((commit) => `- ${commit}`)
-            .join('\n');
+        // Format the changelog following the standard format
+        const header = `# ${version} (${new Date().toISOString().split('T')[0]})\n\n`;
 
-        return changes;
+        // Split commits by double newlines to separate different commits
+        const formattedChanges = commits
+            .split('\n\n')
+            .filter(Boolean)
+            .map((commit) => {
+                // First line is the subject
+                const [subject, ...body] = commit.split('\n');
+                const formattedBody = body
+                    .filter(Boolean)
+                    .map((line) => `  ${line}`)
+                    .join('\n');
+
+                return `- ${subject}${formattedBody ? '\n' + formattedBody : ''}`;
+            })
+            .join('\n\n');
+
+        return header + formattedChanges;
     } catch (error) {
         console.error('Error getting changelog:', error);
         return 'Error generating changelog';

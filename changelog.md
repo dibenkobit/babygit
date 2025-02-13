@@ -1,1 +1,1 @@
-No changes found
+- fix: Add debug statements for release commands
