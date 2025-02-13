@@ -1,6 +1,6 @@
 {
   "name": "aidgit",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "aidgit – AI-powered Git workflow tools",
   "main": "dist/cli.js",
   "bin": {
