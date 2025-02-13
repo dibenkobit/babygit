@@ -14,6 +14,7 @@
 - 🎯 **Smart Version Bumping**: Automatically increments version numbers following semantic versioning (major.minor.patch)
 - 📝 **Automated Changelog**: Generates well-formatted changelogs from your commit messages
 - 🌳 **Branch Management**: Creates and manages release branches with a standardized naming convention
+- 🏷️ **Git Tags**: Automatically creates and pushes annotated version tags
 - 🤝 **Git Integration**: Seamlessly handles git operations (branching, committing, pushing)
 - 🎨 **Beautiful Output**: Produces clean, readable, and standardized documentation
 - 🔄 **Keep a Changelog**: Follows the Keep a Changelog format for consistent and readable history
@@ -65,7 +66,8 @@ When you run `gitaid release`, it:
 2. 🌿 Creates a new release branch (e.g., release/1.2.3)
 3. 📝 Generates a changelog from your commits
 4. 💾 Commits the changes
-5. 🚀 Pushes everything to your repository
+5. 🏷️ Creates an annotated git tag (e.g., v1.2.3)
+6. 🚀 Pushes everything to your repository
 
 ## 📖 Generated Changelog Format
 

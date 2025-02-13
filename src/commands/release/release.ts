@@ -1,5 +1,5 @@
 import { Command } from 'commander';
-import { commitAndPush } from '../../utils/git.js';
+import { commitAndPush, createAndPushTag } from '../../utils/git.js';
 import { bumpVersion } from './bump-version.js';
 import { createReleaseBranch } from './create-release-branch.js';
 import { getChangelog } from './get-changelog.js';
@@ -36,6 +36,13 @@ releaseCommand
 
             if (!pushed) {
                 console.error('Aborting release due to push error.');
+                process.exit(1);
+            }
+
+            // Create and push tag
+            const tagged = await createAndPushTag(newVersion);
+            if (!tagged) {
+                console.error('Aborting release due to tag creation error.');
                 process.exit(1);
             }
         } catch (error) {
