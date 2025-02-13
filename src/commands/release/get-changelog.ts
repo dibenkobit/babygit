@@ -27,13 +27,28 @@ export function getChangelog(version: string): string {
                 if (lines.length === 0) return '';
 
                 const [subject, ...body] = lines;
+                const trimmedSubject = subject.trim();
+
+                // Format subject line - add dash if not present
+                const formattedSubject = trimmedSubject[0] === '-' ? trimmedSubject : `- ${trimmedSubject}`;
+
                 if (body.length === 0) {
-                    return `- ${subject}`;
+                    return formattedSubject;
                 }
 
-                const formattedBody = body.map((line) => `    ${line.trim()}`).join('\n');
+                const formattedBody = body
+                    .map((line) => {
+                        const trimmedLine = line.trim();
+                        if (line[0] === '-') {
+                            return `    ${trimmedLine}`;
+                        } else {
+                            // Remove any existing dashes and add proper list item format
+                            return `    - ${trimmedLine.replace(/^-+\s*/, '')}`;
+                        }
+                    })
+                    .join('\n');
 
-                return `- ${subject}\n${formattedBody}`;
+                return `${formattedSubject}\n${formattedBody}`;
             })
             .filter(Boolean)
             .join('\n\n');

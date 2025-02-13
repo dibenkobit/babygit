@@ -1,3 +1,27 @@
+# 0.0.11 (2025-02-13)
+
+- refactor: Improve changelog subject formatting
+    - Trim subject lines
+
+- Prefix with dash if missing
+
+- Update return statements with formatted subject
+
+- refactor: Simplify list item formatting in changelog generator
+    - Replace regex /^- .+/ with line[0] === '-'
+
+- Adjust list item formatting logic
+
+- fix: Ensure proper formatting of changelog list items
+    - Update regex to detect properly formatted list items
+
+- Remove existing dashes and reformat list items
+
+- fix: Correct changelog formatting
+    - Preserve existing list items
+
+- Add dashes to non-list lines
+
 # 0.0.10 (2025-02-13)
 
 - refactor: Improve changelog formatting and generation

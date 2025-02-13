@@ -1,6 +1,6 @@
 {
   "name": "gitaid",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "gitaid – AI-powered Commit Message Generator",
   "main": "dist/cli.js",
   "bin": {
