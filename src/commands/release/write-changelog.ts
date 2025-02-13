@@ -18,7 +18,7 @@ export async function writeChangelog(newChanges: string): Promise<void> {
         // Read existing changelog
         let existingContent = '';
         try {
-            const content = await fs.readFile('./changelog.md', 'utf-8');
+            const content = await fs.readFile('./CHANGELOG.md', 'utf-8');
             // Remove header from existing content if it exists
             existingContent = content.replace(CHANGELOG_HEADER, '');
         } catch (error) {
@@ -31,8 +31,8 @@ export async function writeChangelog(newChanges: string): Promise<void> {
             : `${CHANGELOG_HEADER}${newChanges}`;
 
         // Write updated changelog
-        await fs.writeFile('./changelog.md', updatedContent, 'utf-8');
-        console.log('Changelog written to changelog.md');
+        await fs.writeFile('./CHANGELOG.md', updatedContent, 'utf-8');
+        console.log('Changelog written to CHANGELOG.md');
     } catch (error) {
         console.error('Error writing changelog:', error);
         throw error;
