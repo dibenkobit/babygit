@@ -1,13 +1,11 @@
 import { Command } from 'commander';
+import { commitAndPush } from '../../utils/git.js';
 import { bumpVersion } from './bump-version.js';
 import { createReleaseBranch } from './create-release-branch.js';
 import { getChangelog } from './get-changelog.js';
 import { writeChangelog } from './write-changelog.js';
 
 const releaseCommand = new Command('release');
-
-// FIXME:
-console.log(456);
 
 releaseCommand
     .argument('[bump]', 'version bump type (major, minor, patch)', 'patch')
@@ -32,6 +30,18 @@ releaseCommand
         try {
             const changelog = await getChangelog(newVersion);
             await writeChangelog(changelog);
+
+            const releaseBranch = `release/${newVersion}`;
+            const pushed = await commitAndPush(
+                ['changelog.md'],
+                `docs: Update changelog for version ${newVersion}`,
+                releaseBranch
+            );
+
+            if (!pushed) {
+                console.error('Aborting release due to push error.');
+                process.exit(1);
+            }
         } catch (error) {
             console.error('Error generating changelog:', error);
             process.exit(1);
