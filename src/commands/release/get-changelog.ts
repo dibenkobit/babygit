@@ -31,7 +31,17 @@ export function getChangelog(version: string): string {
                     return `- ${subject}`;
                 }
 
-                const formattedBody = body.map((line) => `    ${line.trim()}`).join('\n');
+                const formattedBody = body
+                    .map((line) => {
+                        const trimmedLine = line.trim();
+                        // If line already starts with a dash, just add indentation
+                        if (trimmedLine.startsWith('-')) {
+                            return `    ${trimmedLine}`;
+                        }
+                        // Otherwise add indentation and a dash
+                        return `    - ${trimmedLine}`;
+                    })
+                    .join('\n');
 
                 return `- ${subject}\n${formattedBody}`;
             })
