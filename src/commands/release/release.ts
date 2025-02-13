@@ -1,3 +1,4 @@
+import { execSync } from 'child_process';
 import { Command } from 'commander';
 import { commitAndPush, createAndPushTag } from '../../utils/git.js';
 import { bumpVersion } from './bump-version.js';
@@ -29,6 +30,15 @@ releaseCommand
         }
         try {
             const changelog = await getChangelog(newVersion);
+
+            // If no changes found, abort the release
+            if (changelog === 'No changes found') {
+                console.error('No changes found since last release. Aborting release process.');
+                // Clean up the release branch since we're aborting
+                execSync(`git checkout ${options.from} && git branch -D release/${newVersion}`, { stdio: 'inherit' });
+                process.exit(1);
+            }
+
             await writeChangelog(changelog);
 
             const releaseBranch = `release/${newVersion}`;
