@@ -9,7 +9,7 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "start": "bun run src/cli.ts",
+    "start": "bun run src/cli.ts release",
     "dev": "bun run src/cli.ts",
     "build": "tsc",
     "prepublishOnly": "npm run build",
@@ -32,6 +32,7 @@
   },
   "dependencies": {
     "commander": "^13.1.0",
+    "openai": "^4.84.1",
     "semver": "^7.7.1"
   },
   "peerDependencies": {
