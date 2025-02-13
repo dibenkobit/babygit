@@ -35,11 +35,12 @@ export function getChangelog(version: string): string {
                     .map((line) => {
                         const trimmedLine = line.trim();
                         // Check if line is already a properly formatted list item
-                        if (/^- .+/.test(trimmedLine)) {
+                        if (line[0] === '-') {
                             return `    ${trimmedLine}`;
+                        } else {
+                            // Remove any existing dashes and add proper list item format
+                            return `    - ${trimmedLine.replace(/^-+\s*/, '')}`;
                         }
-                        // Remove any existing dashes and add proper list item format
-                        return `    - ${trimmedLine.replace(/^-+\s*/, '')}`;
                     })
                     .join('\n');
 
