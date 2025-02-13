@@ -32,11 +32,7 @@ releaseCommand
             await writeChangelog(changelog);
 
             const releaseBranch = `release/${newVersion}`;
-            const pushed = await commitAndPush(
-                ['changelog.md'],
-                `docs: Update changelog for version ${newVersion}`,
-                releaseBranch
-            );
+            const pushed = await commitAndPush(`docs: Update changelog for version ${newVersion}`, releaseBranch);
 
             if (!pushed) {
                 console.error('Aborting release due to push error.');

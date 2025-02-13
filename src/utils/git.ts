@@ -1,12 +1,12 @@
 import { execSync } from 'child_process';
 
 /**
- * Commits and pushes changes to the specified branch
+ * Commits and pushes all changes to the specified branch
  */
-export async function commitAndPush(files: string[], message: string, branch: string): Promise<boolean> {
+export async function commitAndPush(message: string, branch: string): Promise<boolean> {
     try {
-        // Add specified files
-        execSync(`git add ${files.join(' ')}`, { stdio: 'inherit' });
+        // Add all changes
+        execSync('git add -A', { stdio: 'inherit' });
 
         // Create commit
         execSync(`git commit -m "${message}"`, { stdio: 'inherit' });
