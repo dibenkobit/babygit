@@ -1,3 +1,4 @@
+import { execSync } from 'child_process';
 import { Command } from 'commander';
 import { commitAndPush } from '../../utils/git.js';
 import { bumpVersion } from './bump-version.js';
@@ -39,7 +40,7 @@ releaseCommand
                 process.exit(1);
             }
         } catch (error) {
-            console.error('Error generating changelog:', error);
+            console.error('Error in release process:', error);
             process.exit(1);
         }
     });
