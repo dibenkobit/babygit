@@ -1,4 +1,3 @@
-import { execSync } from 'child_process';
 import { Command } from 'commander';
 import { commitAndPush } from '../../utils/git.js';
 import { bumpVersion } from './bump-version.js';

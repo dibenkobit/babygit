@@ -1,7 +1,5 @@
-# 0.0.6 (2025-02-13)
+# 0.0.7 (2025-02-13)
 
-- feat: Add commitAndPush utility and update release command
+- chore: Remove unused execSync import
 
-- - Add commitAndPush function in git utils
-
-- - Update release command to use commitAndPush
+- - Delete execSync import from child_process
