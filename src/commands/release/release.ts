@@ -1,3 +1,4 @@
+import { execSync } from 'child_process';
 import { Command } from 'commander';
 import { bumpVersion } from './bump-version.js';
 import { createReleaseBranch } from './create-release-branch.js';
@@ -32,8 +33,18 @@ releaseCommand
         try {
             const changelog = await getChangelog(newVersion);
             await writeChangelog(changelog);
+
+            // Push changes to origin
+            const releaseBranch = `release/${newVersion}`;
+            execSync(
+                `git add changelog.md && git commit -m "docs: Update changelog for version ${newVersion}" && git push origin ${releaseBranch}`,
+                {
+                    stdio: 'inherit'
+                }
+            );
+            console.log(`Changes pushed to origin/${releaseBranch}`);
         } catch (error) {
-            console.error('Error generating changelog:', error);
+            console.error('Error in release process:', error);
             process.exit(1);
         }
     });
