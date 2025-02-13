@@ -6,6 +6,9 @@ import { writeChangelog } from './write-changelog.js';
 
 const releaseCommand = new Command('release');
 
+// FIXME:
+console.log(456);
+
 releaseCommand
     .argument('[bump]', 'version bump type (major, minor, patch)', 'patch')
     .option('--from <branch>', 'Base branch to create release branch from', 'develop')
