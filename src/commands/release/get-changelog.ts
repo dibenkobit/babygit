@@ -7,9 +7,13 @@ export function getChangelog(version: string): string {
     try {
         const releaseBranch = `release/${version}`;
         // Get full commit messages including body between main and release branch
-        const commits = execSync(`git log main..${releaseBranch} --pretty=format:"%s%n%b" --no-merges`, {
-            encoding: 'utf-8'
-        }).trim();
+        // Using %B to get full commit message and adding a special separator between commits
+        const commits = execSync(
+            `git log main..${releaseBranch} --pretty=format:"%B---COMMIT_SEPARATOR---" --no-merges`,
+            {
+                encoding: 'utf-8'
+            }
+        ).trim();
 
         if (!commits) {
             return 'No changes found';
@@ -20,7 +24,7 @@ export function getChangelog(version: string): string {
 
         // Split commits and format them
         const formattedChanges = commits
-            .split('\n\n')
+            .split('---COMMIT_SEPARATOR---')
             .filter(Boolean)
             .map((commit) => {
                 const lines = commit.split('\n').filter(Boolean);
