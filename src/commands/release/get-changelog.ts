@@ -27,7 +27,7 @@ export function getChangelog(version: string): string {
                 const [subject, ...body] = commit.split('\n');
                 const formattedBody = body
                     .filter(Boolean)
-                    .map((line) => `  ${line}`)
+                    .map((line) => `    ${line}`) // Using 4 spaces for indentation
                     .join('\n');
 
                 return `- ${subject}${formattedBody ? '\n' + formattedBody : ''}`;
