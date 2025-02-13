@@ -1,10 +1,10 @@
 {
-  "name": "gitaid",
+  "name": "aidgit",
   "version": "1.1.0",
-  "description": "gitaid – AI-powered Git workflow tools",
+  "description": "aidgit – AI-powered Git workflow tools",
   "main": "dist/cli.js",
   "bin": {
-    "gitaid": "dist/cli.js"
+    "aidgit": "dist/cli.js"
   },
   "license": "MIT",
   "type": "module",
@@ -55,12 +55,12 @@
   "author": "Nikita Snetkov",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dibenkobit/gitaid.git"
+    "url": "git+https://github.com/dibenkobit/aidgit.git"
   },
   "bugs": {
-    "url": "https://github.com/dibenkobit/gitaid/issues"
+    "url": "https://github.com/dibenkobit/aidgit/issues"
   },
-  "homepage": "https://github.com/dibenkobit/gitaid#readme",
+  "homepage": "https://github.com/dibenkobit/aidgit#readme",
   "engines": {
     "node": ">=18.0.0"
   }
