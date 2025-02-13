@@ -1,7 +1,7 @@
 {
   "name": "gitaid",
   "version": "0.1.0",
-  "description": "gitaid – AI-powered Commit Message Generator",
+  "description": "gitaid – AI-powered Git workflow tools",
   "main": "dist/cli.js",
   "bin": {
     "gitaid": "dist/cli.js"
@@ -60,7 +60,7 @@
   "bugs": {
     "url": "https://github.com/dibenkobit/gitaid/issues"
   },
-  "homepage": "https://github.com/dibenkobit/comai#readme",
+  "homepage": "https://github.com/dibenkobit/gitaid#readme",
   "engines": {
     "node": ">=18.0.0"
   }
