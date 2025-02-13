@@ -1,14 +1,12 @@
 import { execSync } from 'child_process';
 import { Command } from 'commander';
+import { commitAndPush } from '../../utils/git.js';
 import { bumpVersion } from './bump-version.js';
 import { createReleaseBranch } from './create-release-branch.js';
 import { getChangelog } from './get-changelog.js';
 import { writeChangelog } from './write-changelog.js';
 
 const releaseCommand = new Command('release');
-
-// FIXME:
-console.log(456);
 
 releaseCommand
     .argument('[bump]', 'version bump type (major, minor, patch)', 'patch')
@@ -34,15 +32,13 @@ releaseCommand
             const changelog = await getChangelog(newVersion);
             await writeChangelog(changelog);
 
-            // Push changes to origin
             const releaseBranch = `release/${newVersion}`;
-            execSync(
-                `git add changelog.md && git commit -m "docs: Update changelog for version ${newVersion}" && git push origin ${releaseBranch}`,
-                {
-                    stdio: 'inherit'
-                }
-            );
-            console.log(`Changes pushed to origin/${releaseBranch}`);
+            const pushed = await commitAndPush(`docs: Update changelog for version ${newVersion}`, releaseBranch);
+
+            if (!pushed) {
+                console.error('Aborting release due to push error.');
+                process.exit(1);
+            }
         } catch (error) {
             console.error('Error in release process:', error);
             process.exit(1);
