@@ -14,7 +14,7 @@ const packageJson = JSON.parse(readFileSync(join(__dirname, '..', 'package.json'
 
 const program = new Command();
 
-program.name('aidgit').description('aidgit: AI-powered Git workflow tools').version(packageJson.version);
+program.name('babygit').description('babygit: AI-powered Git workflow tools').version(packageJson.version);
 
 program.addCommand(releaseCommand);
 
