@@ -34,12 +34,12 @@ export function getChangelog(version: string): string {
                 const formattedBody = body
                     .map((line) => {
                         const trimmedLine = line.trim();
-                        // If line already starts with a dash, just add indentation
-                        if (trimmedLine.startsWith('-')) {
+                        // Check if line is already a properly formatted list item
+                        if (/^- .+/.test(trimmedLine)) {
                             return `    ${trimmedLine}`;
                         }
-                        // Otherwise add indentation and a dash
-                        return `    - ${trimmedLine}`;
+                        // Remove any existing dashes and add proper list item format
+                        return `    - ${trimmedLine.replace(/^-+\s*/, '')}`;
                     })
                     .join('\n');
 
