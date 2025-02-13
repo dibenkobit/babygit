@@ -1,3 +1,10 @@
+# 0.0.10 (2025-02-13)
+
+- refactor: Improve changelog formatting and generation
+    - Correct indentation in changelog.md
+
+- - Refactor get-changelog.ts for commit formatting
+
 # 0.0.9 (2025-02-13)
 
 - fix: Update indentation in getChangelog
