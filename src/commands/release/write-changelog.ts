@@ -1,21 +1,34 @@
 import { promises as fs } from 'fs';
 
+const CHANGELOG_HEADER = `# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+`;
+
 /**
  * Записывает сгенерированный changelog в файл changelog.md.
- * Новые изменения добавляются в начало файла.
+ * Новые изменения добавляются в начало файла после стандартного заголовка.
  */
 export async function writeChangelog(newChanges: string): Promise<void> {
     try {
         // Read existing changelog
         let existingContent = '';
         try {
-            existingContent = await fs.readFile('./changelog.md', 'utf-8');
+            const content = await fs.readFile('./changelog.md', 'utf-8');
+            // Remove header from existing content if it exists
+            existingContent = content.replace(CHANGELOG_HEADER, '');
         } catch (error) {
             // File doesn't exist yet, that's ok
         }
 
-        // Combine new changes with existing content
-        const updatedContent = existingContent ? `${newChanges}\n\n${existingContent}` : newChanges;
+        // Combine header, new changes, and existing content
+        const updatedContent = existingContent
+            ? `${CHANGELOG_HEADER}${newChanges}\n\n${existingContent}`
+            : `${CHANGELOG_HEADER}${newChanges}`;
 
         // Write updated changelog
         await fs.writeFile('./changelog.md', updatedContent, 'utf-8');
