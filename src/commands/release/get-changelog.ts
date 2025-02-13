@@ -7,7 +7,7 @@ export function getChangelog(version: string): string {
     try {
         const releaseBranch = `release/${version}`;
         // Get full commit messages including body between main and release branch
-        const commits = execSync(`git log main..${releaseBranch} --pretty=format:"%s%n%n%b" --no-merges`, {
+        const commits = execSync(`git log main..${releaseBranch} --pretty=format:"%s%n%b" --no-merges`, {
             encoding: 'utf-8'
         }).trim();
 
@@ -18,20 +18,24 @@ export function getChangelog(version: string): string {
         // Format the changelog following the standard format
         const header = `# ${version} (${new Date().toISOString().split('T')[0]})\n\n`;
 
-        // Split commits by double newlines to separate different commits
+        // Split commits and format them
         const formattedChanges = commits
             .split('\n\n')
             .filter(Boolean)
             .map((commit) => {
-                // First line is the subject
-                const [subject, ...body] = commit.split('\n');
-                const formattedBody = body
-                    .filter(Boolean)
-                    .map((line) => `    ${line}`) // Using 4 spaces for indentation
-                    .join('\n');
+                const lines = commit.split('\n').filter(Boolean);
+                if (lines.length === 0) return '';
 
-                return `- ${subject}${formattedBody ? '\n' + formattedBody : ''}`;
+                const [subject, ...body] = lines;
+                if (body.length === 0) {
+                    return `- ${subject}`;
+                }
+
+                const formattedBody = body.map((line) => `    ${line.trim()}`).join('\n');
+
+                return `- ${subject}\n${formattedBody}`;
             })
+            .filter(Boolean)
             .join('\n\n');
 
         return header + formattedChanges;
