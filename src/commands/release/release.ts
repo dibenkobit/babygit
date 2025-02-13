@@ -18,27 +18,35 @@ releaseCommand
             console.error('Invalid bump type. Use major, minor, or patch.');
             process.exit(1);
         }
+
+        // Check for changes before doing anything else
+        try {
+            // Get changes between main and current branch
+            const changes = execSync(`git log main..${options.from} --oneline`, { encoding: 'utf-8' }).trim();
+
+            if (!changes) {
+                console.error('No changes found since last release. Aborting release process.');
+                process.exit(1);
+            }
+        } catch (error) {
+            console.error('Error checking for changes:', error);
+            process.exit(1);
+        }
+
         const newVersion = await bumpVersion(bumpType as 'major' | 'minor' | 'patch');
         if (!newVersion) {
             console.error('Aborting release due to version bump error.');
             process.exit(1);
         }
+
         const branchCreated = createReleaseBranch(newVersion, options.from);
         if (!branchCreated) {
             console.error('Aborting release due to branch creation error.');
             process.exit(1);
         }
+
         try {
             const changelog = await getChangelog(newVersion);
-
-            // If no changes found, abort the release
-            if (changelog === 'No changes found') {
-                console.error('No changes found since last release. Aborting release process.');
-                // Clean up the release branch since we're aborting
-                execSync(`git checkout ${options.from} && git branch -D release/${newVersion}`, { stdio: 'inherit' });
-                process.exit(1);
-            }
-
             await writeChangelog(changelog);
 
             const releaseBranch = `release/${newVersion}`;
