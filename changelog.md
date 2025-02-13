@@ -1,3 +1,10 @@
+# 0.0.12 (2025-02-13)
+
+- refactor: Improve commit message parsing
+    - Use %B in git log format
+    - Add commit separator
+    - Update splitting logic
+
 # 0.0.11 (2025-02-13)
 
 - refactor: Improve changelog subject formatting
