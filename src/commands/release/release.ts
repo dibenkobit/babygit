@@ -24,7 +24,7 @@ releaseCommand
             // Get changes between main and current branch
             const changes = execSync(`git log main..${options.from} --oneline`, { encoding: 'utf-8' }).trim();
 
-            if (!changes) {
+            if (!changes || changes === 'No changes found') {
                 console.error('No changes found since last release. Aborting release process.');
                 process.exit(1);
             }
@@ -47,6 +47,13 @@ releaseCommand
 
         try {
             const changelog = await getChangelog(newVersion);
+
+            // If no changes found, abort the release process
+            if (changelog === 'No changes found') {
+                console.error('No changes found since last release. Aborting release process.');
+                process.exit(1);
+            }
+
             await writeChangelog(changelog);
 
             const releaseBranch = `release/${newVersion}`;
