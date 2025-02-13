@@ -1,14 +1,17 @@
 import { OpenAI } from 'openai';
 
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY
-});
+function getOpenAIClient(apiKey?: string) {
+    return new OpenAI({
+        apiKey: apiKey || process.env.OPENAI_API_KEY
+    });
+}
 
 /**
  * Generates a changelog summary from git diff using OpenAI API
  */
-export async function generateChangelogSummary(diff: string): Promise<string> {
+export async function generateChangelogSummary(diff: string, apiKey?: string): Promise<string> {
     try {
+        const openai = getOpenAIClient(apiKey);
         const prompt = `Given the following git diff, please generate a changelog summary in the following format:
 - feat/fix/chore/docs/etc: Main change description
     - Detailed change 1
