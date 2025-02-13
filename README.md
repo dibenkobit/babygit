@@ -1,4 +1,4 @@
-# 🚀 aidgit
+# Aidgit - AI-powered Git workflow tools
 
 [![npm version](https://img.shields.io/npm/v/aidgit.svg)](https://www.npmjs.com/package/aidgit)
 [![npm downloads](https://img.shields.io/npm/dm/aidgit.svg)](https://www.npmjs.com/package/aidgit)
