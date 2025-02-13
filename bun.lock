@@ -2,7 +2,7 @@
   "lockfileVersion": 1,
   "workspaces": {
     "": {
-      "name": "gitaid",
+      "name": "aidgit",
       "dependencies": {
         "commander": "^13.1.0",
         "semver": "^7.7.1",
