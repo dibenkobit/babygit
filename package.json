@@ -50,13 +50,12 @@
   ],
   "keywords": [
     "git",
-    "commit",
+    "commits",
+    "releases",
     "ai",
-    "cli",
-    "openai",
-    "anthropic",
-    "deepseek",
-    "ollama"
+    "workflows",
+    "automation",
+    "git automation"
   ],
   "repository": {
     "type": "git",
