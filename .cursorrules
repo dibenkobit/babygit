@@ -1,0 +1,32 @@
+## Tech Stack
+
+- TypeScript
+- Bun
+
+## Workflow Setup
+
+- Always use Bun for adding dependencies
+- Differentiate between production and development dependencies using appropriate flags
+
+## Coding Standards
+
+- Write all new code in TypeScript
+- Implement proper TypeScript types for all variables, functions, and return values
+- Use barrel imports for clean module organization
+- Implement comprehensive error handling and input validation
+
+## Best Practices
+
+- Prioritize performance optimization and code readability
+- Follow SOLID principles
+- Write clean, maintainable code with minimal technical debt
+
+## IMPORTANT!!!
+
+- Verify all files for errors before considering tasks complete
+- Run all project tests after implementing changes to ensure functionality
+
+## Tests
+
+- Develop meaningful tests that validate core functionality
+- If no useful tests can be written for a particular component, explicitly explain why
