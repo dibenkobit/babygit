@@ -105,7 +105,8 @@ export const commit = new Command()
                 printInfo('\nCommit operation aborted.');
             }
         } catch (error) {
-            // if error is axios error and its 401
+            console.log('');
+
             if (error instanceof AxiosError && error.response?.status === 401) {
                 clearAuthToken();
                 printError('Your authentication token is invalid. Please run "bbgit auth" to re-authenticate.');
