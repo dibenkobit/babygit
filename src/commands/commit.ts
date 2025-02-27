@@ -62,8 +62,6 @@ export const commit = new Command()
                 smartGroupping: smartGroupping
             };
 
-            console.log(request);
-
             const { data: result } = await axios.post(`${API_URL}/commit`, request, {
                 headers: {
                     Authorization: `Bearer ${token}`

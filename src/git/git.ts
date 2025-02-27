@@ -1,5 +1,5 @@
 import { IGNORED_EXTENSIONS, IGNORED_FILES } from './git.const.js';
-import { CommitGroup, StagedFile } from './git.types.js';
+import { CommitGroup, StagedFile, GitStagedFile } from './git.types.js';
 
 export async function stageAllChanges(): Promise<void> {
     const processResult = Bun.spawnSync({
@@ -13,18 +13,148 @@ export async function stageAllChanges(): Promise<void> {
     }
 }
 
-export async function getStagedDiff(): Promise<string> {
-    const processResult = Bun.spawnSync({
-        cmd: ['git', 'diff', '--staged'],
+/**
+ * Get information about staged files including deletion status and ignore flags
+ */
+async function getStagedFilesInfo(): Promise<GitStagedFile[]> {
+    // Get list of staged files
+    const filesResult = Bun.spawnSync({
+        cmd: ['git', 'diff', '--staged', '--name-only'],
         stdout: 'pipe',
         stderr: 'pipe'
     });
 
-    if (processResult.exitCode !== 0) {
-        throw new Error('Failed to get staged diff: ' + processResult.stderr.toString());
+    if (filesResult.exitCode !== 0) {
+        throw new Error('Failed to get staged files: ' + filesResult.stderr.toString());
     }
 
-    return processResult.stdout.toString();
+    const files = filesResult.stdout.toString().trim().split('\n').filter(Boolean);
+
+    if (files.length === 0) {
+        return [];
+    }
+
+    // Get status to detect deleted files
+    const statusResult = Bun.spawnSync({
+        cmd: ['git', 'status', '--porcelain'],
+        stdout: 'pipe',
+        stderr: 'pipe'
+    });
+
+    if (statusResult.exitCode !== 0) {
+        throw new Error('Failed to get git status: ' + statusResult.stderr.toString());
+    }
+
+    // Parse status to find deleted files
+    const statusLines = statusResult.stdout.toString().trim().split('\n');
+    const deletedFiles = new Set<string>();
+
+    for (const line of statusLines) {
+        if (line.startsWith('D ') || line.startsWith('AD ')) {
+            const filePath = line.substring(line.indexOf(' ') + 1).trim();
+            deletedFiles.add(filePath);
+        }
+    }
+
+    // Process each file
+    return files.map((file) => {
+        const fileName = file.split('/').pop() || '';
+        const fileExt = fileName.includes('.') ? `.${fileName.split('.').pop()}`.toLowerCase() : '';
+        const isIgnored = IGNORED_FILES.includes(fileName) || IGNORED_EXTENSIONS.includes(fileExt);
+        const isDeleted = deletedFiles.has(file);
+
+        return {
+            path: file,
+            isIgnored,
+            isDeleted
+        };
+    });
+}
+
+/**
+ * Get diff for a specific file
+ */
+async function getFileDiff(filePath: string): Promise<string> {
+    try {
+        const diffResult = Bun.spawnSync({
+            cmd: ['git', 'diff', '--staged', '--', filePath],
+            stdout: 'pipe',
+            stderr: 'pipe'
+        });
+
+        if (diffResult.exitCode !== 0) {
+            throw new Error('Failed to get file diff: ' + diffResult.stderr.toString());
+        }
+
+        return diffResult.stdout.toString();
+    } catch (error) {
+        console.error(`Error getting diff for ${filePath}: ${error instanceof Error ? error.message : String(error)}`);
+        return `// Error getting diff: ${error instanceof Error ? error.message : String(error)}`;
+    }
+}
+
+export async function getStagedDiff(): Promise<string> {
+    const stagedFiles = await getStagedFilesInfo();
+
+    if (stagedFiles.length === 0) {
+        return '';
+    }
+
+    // Collect diffs for each file
+    const diffs: string[] = [];
+
+    for (const file of stagedFiles) {
+        if (file.isIgnored && !file.isDeleted) {
+            diffs.push(`diff --git a/${file.path} b/${file.path}\n--- DIFF NOT PRESENTED ---\n`);
+            continue;
+        }
+
+        if (file.isDeleted) {
+            diffs.push(`diff --git a/${file.path} b/${file.path}\n--- FILE WAS DELETED ---\n`);
+            continue;
+        }
+
+        diffs.push(await getFileDiff(file.path));
+    }
+
+    return diffs.join('\n');
+}
+
+export async function getStagedFiles(): Promise<StagedFile[]> {
+    const stagedFiles = await getStagedFilesInfo();
+
+    if (stagedFiles.length === 0) {
+        return [];
+    }
+
+    // Process each file
+    const result: StagedFile[] = [];
+
+    for (const file of stagedFiles) {
+        if (file.isIgnored && !file.isDeleted) {
+            result.push({
+                path: file.path,
+                diff: 'DIFF NOT PRESENTED'
+            });
+            continue;
+        }
+
+        if (file.isDeleted) {
+            result.push({
+                path: file.path,
+                diff: 'FILE WAS DELETED'
+            });
+            continue;
+        }
+
+        const diff = await getFileDiff(file.path);
+        result.push({
+            path: file.path,
+            diff
+        });
+    }
+
+    return result;
 }
 
 export async function commitMessage(message: string): Promise<void> {
@@ -53,99 +183,6 @@ export async function commitMessage(message: string): Promise<void> {
             throw new Error('Commit failed: ' + stderr);
         }
     }
-}
-
-export async function getStagedFiles(): Promise<StagedFile[]> {
-    // Get list of staged files
-    const processResult = Bun.spawnSync({
-        cmd: ['git', 'diff', '--staged', '--name-only'],
-        stdout: 'pipe',
-        stderr: 'pipe'
-    });
-
-    if (processResult.exitCode !== 0) {
-        throw new Error('Failed to get staged files: ' + processResult.stderr.toString());
-    }
-
-    const files = processResult.stdout.toString().trim().split('\n');
-
-    // Get status to detect deleted files
-    const statusResult = Bun.spawnSync({
-        cmd: ['git', 'status', '--porcelain'],
-        stdout: 'pipe',
-        stderr: 'pipe'
-    });
-
-    if (statusResult.exitCode !== 0) {
-        throw new Error('Failed to get git status: ' + statusResult.stderr.toString());
-    }
-
-    // Parse status to find deleted files
-    const statusLines = statusResult.stdout.toString().trim().split('\n');
-    const deletedFiles = new Set<string>();
-
-    for (const line of statusLines) {
-        if (line.startsWith('D ') || line.startsWith('AD ')) {
-            // Example: "D  filename.txt" or "AD filename.txt"
-            const filePath = line.substring(line.indexOf(' ') + 1).trim();
-            deletedFiles.add(filePath);
-        }
-    }
-
-    // Prepare result array
-    const stagedFiles: StagedFile[] = [];
-
-    // Process each file
-    for (const file of files) {
-        if (!file) continue;
-
-        const fileName = file.split('/').pop() || '';
-        const fileExt = fileName.includes('.') ? `.${fileName.split('.').pop()}`.toLowerCase() : '';
-        const isIgnored = IGNORED_FILES.includes(fileName) || IGNORED_EXTENSIONS.includes(fileExt);
-        const isDeleted = deletedFiles.has(file);
-
-        if (isIgnored && !isDeleted) {
-            stagedFiles.push({
-                path: file,
-                diff: 'DIFF NOT PRESENTED'
-            });
-            continue;
-        }
-
-        if (isDeleted) {
-            stagedFiles.push({
-                path: file,
-                diff: 'FILE WAS DELETED'
-            });
-            continue;
-        }
-
-        try {
-            // Get file diff
-            const diffResult = Bun.spawnSync({
-                cmd: ['git', 'diff', '--staged', '--', file],
-                stdout: 'pipe',
-                stderr: 'pipe'
-            });
-
-            if (diffResult.exitCode !== 0) {
-                throw new Error('Failed to get file diff: ' + diffResult.stderr.toString());
-            }
-
-            stagedFiles.push({
-                path: file,
-                diff: diffResult.stdout.toString()
-            });
-        } catch (error) {
-            console.error(`Error getting diff for ${file}: ${error instanceof Error ? error.message : String(error)}`);
-            stagedFiles.push({
-                path: file,
-                diff: '// Error getting diff: ' + (error instanceof Error ? error.message : String(error))
-            });
-        }
-    }
-
-    return stagedFiles;
 }
 
 export async function createCommits(commitGroups: CommitGroup[]): Promise<void> {
