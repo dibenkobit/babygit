@@ -51,6 +51,18 @@ export function saveConfig(config: Config): void {
     }
 }
 
+export function clearAuthToken(): boolean {
+    try {
+        const config = loadConfig();
+        config.auth.token = null;
+        saveConfig(config);
+        return true;
+    } catch (error) {
+        console.error('Error clearing authentication token:', error);
+        return false;
+    }
+}
+
 export function deleteConfig(): boolean {
     try {
         if (existsSync(CONFIG_FILE)) {

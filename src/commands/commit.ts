@@ -1,7 +1,7 @@
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { Command } from 'commander';
 import pkg from '../../package.json' assert { type: 'json' };
-import { loadConfig } from '../config/config.js';
+import { loadConfig, clearAuthToken } from '../config/config.js';
 import { API_URL } from '../constants.js';
 import { commitMessage, createCommits, getStagedDiff, getStagedFiles, stageAllChanges } from '../git/git.js';
 import { CommitGroup } from '../git/git.types.js';
@@ -107,8 +107,14 @@ export const commit = new Command()
                 printInfo('\nCommit operation aborted.');
             }
         } catch (error) {
-            console.log();
-            printError(error instanceof Error ? error.message : 'An unknown error occurred');
+            // if error is axios error and its 401
+            if (error instanceof AxiosError && error.response?.status === 401) {
+                clearAuthToken();
+                printError('Your authentication token is invalid. Please run "bbgit auth" to re-authenticate.');
+            } else {
+                printError(error instanceof Error ? error.message : 'An unknown error occurred');
+            }
+
             process.exit(1);
         }
     });
